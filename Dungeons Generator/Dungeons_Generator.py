@@ -171,4 +171,5 @@ while True:
     generate_room(x,y,w,h,3)
     add_walls()
     draw_map()
+    print("\n")
     time.sleep(1);
