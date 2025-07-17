@@ -1,5 +1,4 @@
 
-
 import numpy as np
 import heapq
 import time
@@ -54,7 +53,7 @@ def aStar(start: Point, goal: Point):
     costSoFar[start] = 0
 
     while openSet:
-        _, current = heapq.heappop(openSet)
+        priority, current = heapq.heappop(openSet)
 
         if current == goal:
             path = []
@@ -76,50 +75,63 @@ def aStar(start: Point, goal: Point):
    
    ##############################
 
-def generate_room(x,y,w,h,iter):
-    if iter > 0 and w>=4 and h>=4 and mapa[y][x] != floor_char:
-	    sx = int(x-w/2)
-	    sy = int(y-h/2)
+def generate_room(x,y,w,h,iteration):
+    if iteration > 0 and w>=4 and h>=4:
+        sx = int(x-w/2)
+        sy = int(y-h/2)
 	    
-	    if sx < 0 or sy < 0 or sx+int(w)>=map_wdt or sy+int(h)>=map_hgh:
-	    	return
+        if sx < 0 or sy < 0 or sx+int(w)>=map_wdt or sy+int(h)>=map_hgh:
+            return
 	    
-	    for yy in range(sy, sy+int(h)):
-	        for xx in range(sx, sx+int(w)):
-	            if xx>=0 and yy>=0 and xx<map_wdt and yy<map_hgh:
-	            	mapa[yy][xx] = floor_char
+        for yy in range(sy, sy+int(h)+1):
+            for xx in range(sx, sx+int(w)+1):
+                if mapa[yy][xx] == floor_char:
+                    return
 	    
-	    neighbour = np.random.choice([1,2,3,4])
-	    xx : int
-	    yy : int
-	    	
-	    if neighbour == 1:
-	    	#top neighbour 
-	    	xx = np.random.randint(-4,4)
-	    	yy = np.random.randint(h*5/4, h*6/4)
-	    if neighbour == 2:
-	    	#right neighbour 
-	    	xx = np.random.randint(w*5/4, w*6/4)
-	    	yy = np.random.randint(-4,4)
-	    if neighbour == 3:
-	    	#bottom neighbour 
-	    	xx = np.random.randint(-4,4)
-	    	yy = -np.random.randint(h*5/4, h*6/4)
-	    if neighbour == 4:
-	    	#left neighbour 
-	    	xx = -np.random.randint(w*5/4, w*6/4)
-	    	yy = np.random.randint(-4,4)
-	    	
-	    	
-	    rx = x + xx
-	    ry = y + yy
+        for yy in range(sy, sy+int(h)):
+            for xx in range(sx, sx+int(w)):
+                mapa[yy][xx] = floor_char
 	    
-	    if rx>=0 and ry>=0 and rx<map_wdt and ry<map_hgh:
+        neighbours = []
+        n_count = np.random.randint(1,3)
+        while(n_count > 0):
+            n = np.random.choice([1,2,3,4])
+            if n not in neighbours:
+                neighbours.append(n)
+                n_count = n_count-1
+	    
+        for i in neighbours:
+            rw = np.random.uniform(w*3/4, w*5/6)
+            rh = np.random.uniform(h*3/4, h*5/6)
 	    	
-	    	rw = np.random.uniform(w*3/4, w*5/6)
-	    	rh = np.random.uniform(h*3/4, h*5/6)
-	    	generate_room(rx, ry, rw, rh, iter-1)
-	    	 ##############################
+            xx : int
+            yy : int
+	    	
+            if i == 1:
+	    	    #top neighbour 
+                xx = np.random.randint(-4,4)
+                yy = np.random.randint((h+rh)/2*5/4, (h+rh)/2*6/4) + 2
+            if i == 2:
+	    	    #right neighbour 
+                xx = np.random.randint((w+rw)/2*5/4, (w+rw)/2*6/4) + 2
+                yy = np.random.randint(-4,4)
+            if i == 3:
+	    	    #bottom neighbour 
+                xx = np.random.randint(-4,4)
+                yy = -np.random.randint((h+rh)/2*5/4, (h+rh)/2*6/4) - 2
+            if i == 4:
+	    	    #left neighbour 
+                xx = -np.random.randint((w+rw)/2*5/4, (w+rw)/2*6/4) - 2
+                yy = np.random.randint(-4,4)
+	    	
+            rx = x + xx
+            ry = y + yy
+	    
+            if rx>=0 and ry>=0 and rx+rw<map_wdt and ry+rh<map_hgh:
+                generate_room(rx, ry, rw, rh, iteration-1)
+        return
+    return
+##############################
 
 def char_in_range(char, r, x, y):
 	for yy in range(y-r, y+r+1):
@@ -132,7 +144,7 @@ def char_in_range(char, r, x, y):
 def add_walls():
 	for y in range(map_hgh):
 	   for x in range(map_wdt):
-            if mapa[y][x]==floor_char and char_in_range(empty_char, 1, x, y):
+            if mapa[y][x] == floor_char and char_in_range(empty_char, 1, x, y):
             	mapa[y][x] = wall_char
 
 ##############################
@@ -159,5 +171,4 @@ while True:
     generate_room(x,y,w,h,3)
     add_walls()
     draw_map()
-    print("\n\n")
     time.sleep(1);
