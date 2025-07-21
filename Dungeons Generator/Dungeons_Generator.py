@@ -258,7 +258,7 @@ def main() :
 	
     # init sdl and renderer
     sdl2.ext.init()
-    window = sdl2.ext.Window("Island Generator", WINDOW_SIZE)
+    window = sdl2.ext.Window("Dungeons Generator", WINDOW_SIZE)
     window.show()
     renderer = sdl2.ext.Renderer(window)
 	
